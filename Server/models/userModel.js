@@ -11,6 +11,6 @@ const UserSchema = new mongoose.Schema({
     resetOTPExpireAt:{type:Number,default:0}
 })
 
-const userModel = mongoose.model('user',UserSchema);
+const userModel = mongoose.models.user ||  mongoose.model('user',UserSchema); // finds thie user model from db if its exsits then it will return that other Else it will create a new model name User
 
 module.exports = userModel;
