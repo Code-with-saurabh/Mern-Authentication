@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+  background: radial-gradient(ellipse at bottom, #1a1a2e, #000);
+  color: #fff;
+  font-family: "Fira Code", monospace;
+  overflow: hidden;
+  margin: 0;
+}
+
+.scene {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.terminal {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid red;
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 85%;
+  max-width: 650px;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px red;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+/* make it visible after JS triggers it */
+.terminal.visible {
+  opacity: 1;
+}
+
+#codeDisplay {
+  font-size: clamp(1rem, 2.8vw, 1.4rem);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.pudgy {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(180px, 45vw, 330px);
+  height: auto;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.falling {
+  position: absolute;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  user-select: none;
+  cursor: pointer;
+  animation: fall 4s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.scoreboard {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  text-align: center;
+  width: auto;
+  min-width: 50%;
+  max-width: 80%;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+@media (max-width: 700px) {
+  .terminal {
+    top: 8%;
+    width: 80%;
+    min-height: 150px;
+    padding: 1rem;
+  }
+
+  #codeDisplay {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+  }
+
+  .pudgy {
+    bottom: 8%;
+    width: clamp(160px, 55vw, 420px);
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal {
+    top: 6%;
+    min-height: 130px;
+  }
+
+  #codeDisplay {
+    font-size: 0.9rem;
+  }
+
+  .pudgy {
+    bottom: 10%;
+    width: clamp(140px, 60vw, 380px);
+  }
+
+  .scoreboard {
+    top: 8px;
+  }
+}
+
+    </style>
+</head>
+<body>
+    <div class="scene">
+  <div class="terminal">
+    <pre id="codeDisplay"></pre>
+  </div>
+
+  <img src="https://assets.codepen.io/11990995/pudgy-devilish.gif" class="pudgy" alt="Pudgy Penguin Devil Costume" />
+
+  <div id="gameArea"></div>
+  <div class="scoreboard">
+    Debugged 👻: <span id="bugCount">0</span> | Candy 🍬:
+    <span id="candyCount">0</span>
+  </div>
+
+</div>
+
+<footer style="position:absolute; bottom:5px; width:100%; text-align:center; font-size:0.8rem; opacity:0.6;">
+  Made by  Code-with-saurabh 🐧 🎃
+</footer>
+</body>
+<script>
+    const codeLines = [
+  "const ghost = findBug('spooky');",
+  "if (candy) { eat(); } else { scream(); }",
+  "debug('hauntedFunction');",
+  "console.log('boo! 👻');",
+  "// 💡 Tip: Tap and click ghosts and candies to collect points!",
+  "return trickOrTreat();"
+];
+
+const codeDisplay = document.getElementById("codeDisplay");
+let lineIndex = 0;
+let bugCount = 0;
+let candyCount = 0;
+
+function typeLine() {
+  if (lineIndex < codeLines.length) {
+    codeDisplay.textContent += "\n" + codeLines[lineIndex++];
+    setTimeout(typeLine, 1000);
+  }
+}
+// Delay showing terminal + typing
+setTimeout(() => {
+  document.querySelector(".terminal").classList.add("visible");
+  typeLine();
+}, 1800); // delay in ms (1.8 seconds)
+
+function spawnItem() {
+  const el = document.createElement("div");
+  el.classList.add("falling");
+
+  const isCandy = Math.random() > 0.6;
+  el.textContent = isCandy ? "🍬" : "👻";
+  el.style.left = Math.random() * 90 + "%";
+  el.style.top = "-30px";
+
+  el.addEventListener("touchstart", handleClick);
+  el.addEventListener("click", handleClick);
+
+  function handleClick(e) {
+    e.preventDefault();
+    el.remove();
+    if (isCandy) {
+      candyCount++;
+      document.getElementById("candyCount").textContent = candyCount;
+    } else {
+      bugCount++;
+      document.getElementById("bugCount").textContent = bugCount;
+    }
+  }
+
+  el.addEventListener("click", () => {
+    el.remove();
+    if (isCandy) {
+      candyCount++;
+      document.getElementById("candyCount").textContent = candyCount;
+    } else {
+      bugCount++;
+      document.getElementById("bugCount").textContent = bugCount;
+    }
+  });
+
+  document.getElementById("gameArea").appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+setInterval(spawnItem, 1000);
+
+</script>
+</html>
