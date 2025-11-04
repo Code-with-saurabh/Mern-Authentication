@@ -1,0 +1,31 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-error.log*
+dist/
+build/
+
+# Client-side (React)
+# Add specific build output directories if different from 'build/' or 'dist/'
+# For Create React App, 'build/' is typically handled by the 'build/' entry above.
+
+# Server-side (Express)
+# Add any specific server-side logs or temporary files if needed
+# For example, if you have a dedicated 'logs' directory:
+# logs/
+
+# MongoDB
+# If you have local MongoDB data files within your project directory:
+# data/db/
+
+# IDE and OS specific files
+.DS_Store
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.idea/
+Thumbs.db
