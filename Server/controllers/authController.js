@@ -1,0 +1,51 @@
+const bcrypt = require("bcryptjs")
+const JWT = require("jsonwebtoken")
+const userModel = require("../models/userModel");
+const { JWT_SECRET, NODE_ENV } = require("../Config/Config");
+const register = async (req,res)=>{
+    try{
+        const {name,email,password} = req.body;
+
+        if(!name || !email || !password){
+            return res.json({
+                success:false,
+                message:"Missing Details"
+            })
+        }
+
+        //existing User
+        const existingUser = await userModel.findOne({email});  
+
+        if(existingUser){
+            return res.json({
+                success:false,
+                message:`${existingUser.name} User already exists...`
+            })
+        }
+
+        //hashing password 
+        const hashedPassword = await bcrypt.hash(password,10)
+
+        //create User
+        const User = new userModel({name,email,password:hashedPassword})
+
+        const NewUser = await User.save()
+
+        //create a token
+
+        const token = JWT.sign({id:NewUser._id},JWT_SECRET,{expiresIn:'7d'});
+
+        res.cookie('token',token,{
+            httpOnly:true,
+            secure:NODE_ENV==="production",
+            sameSite:NODE_ENV==="production"?'none':'strict',
+            maxAge:7*24*60*60*1000,
+        })
+
+    }catch(error){
+        res.json({
+                success:false,
+                message:error.message
+            })
+    }
+}
