@@ -42,6 +42,13 @@ const register = async (req,res)=>{
             maxAge:7*24*60*60*1000,
         })
 
+          return res.json({
+            success:true,
+            message:"user register successfully",
+            data:{username:NewUser.name,emial:NewUser.email}
+        })
+
+
     }catch(error){
         res.json({
                 success:false,
@@ -50,6 +57,57 @@ const register = async (req,res)=>{
     }
 }
 
+const login = async(req,res)=>{
+    try{
+        const {email,password} = req.body;
+        if(!password|| !email){
+                        return res.json({
+                success:false,
+                message:"Missing Details"
+            })
+        }
+
+        const user = await userModel.findOne({email});
+
+        if(!user){
+             return res.json({
+                success:false,
+                message:`Invalid Email....`
+            })
+        }
+
+        const isMatch = await bcrypt.compare(password,user.password)
+
+        if(!isMatch){
+               return res.json({
+                success:false,
+                message:`Invalid Password....`
+            })
+        }
+
+                const token = JWT.sign({id:user._id},JWT_SECRET,{expiresIn:'7d'});
+
+        res.cookie('token',token,{
+            httpOnly:true,
+            secure:NODE_ENV==="production",
+            sameSite:NODE_ENV==="production"?'none':'strict',
+            maxAge:7*24*60*60*1000,
+        })
+
+        return res.json({
+            success:true,
+            message:"user logged in successfully",
+            data:{username:user.name,emial:user.email}
+        })
+
+
+    }catch(error){
+        res.json({
+                success:false,
+                message:error.message
+            })
+    }
+}
 
 
 
