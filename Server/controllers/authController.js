@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs")
 const JWT = require("jsonwebtoken")
 const userModel = require("../models/userModel");
 const { JWT_SECRET, NODE_ENV } = require("../Config/Config");
+const sendEmail = require("../Services/SendEmail");
 const register = async (req,res)=>{
     try{
         const {name,email,password} = req.body;
@@ -42,6 +43,7 @@ const register = async (req,res)=>{
             maxAge:7*24*60*60*1000,
         })
 
+        sendEmail(NewUser.email,"User Register successfully",`Hello ${NewUser.name}`)
           return res.json({
             success:true,
             message:"user register successfully",

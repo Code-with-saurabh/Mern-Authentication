@@ -2,7 +2,8 @@ const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema({
     name:{type:String,require:true},
-    email:{type:String,require:true,unique:true},
+   
+    email:{type:String,require:true},
     password:{type:String,require:true},
     verifyotp:{type:String,default:''},
     verifyotpExpireAt:{type:Number,default:0},
@@ -10,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     resetOTP:{type:String,default:''},
     resetOTPExpireAt:{type:Number,default:0}
 })
-
+ // email:{type:String,require:true,unique:true},
 const userModel = mongoose.models.user ||  mongoose.model('user',UserSchema); // finds thie user model from db if its exsits then it will return that other Else it will create a new model name User
 
 module.exports = userModel;
