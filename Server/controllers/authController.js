@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken")
 const userModel = require("../models/userModel");
 const { JWT_SECRET, NODE_ENV } = require("../Config/Config");
 const sendEmail = require("../Services/SendEmail");
+const OTP = require("../Services/generateOTP");
 const register = async (req,res)=>{
     try{
         const {name,email,password} = req.body;
@@ -43,7 +44,8 @@ const register = async (req,res)=>{
             maxAge:7*24*60*60*1000,
         })
 
-        sendEmail(NewUser.email,"User Register successfully",`Hello ${NewUser.name}`)
+        sendEmail(NewUser.email,"User Register successfully",`Hello ${NewUser.name}`,`
+            <h1>Hello User ${NewUser.name}</h1><br><p>Your OTP is ${OTP()}</p>`)
           return res.json({
             success:true,
             message:"user register successfully",
@@ -134,4 +136,35 @@ const logout = async (req,res)=>{
 }
 
 
-module.exports = {register,login,logout}
+
+const sendVerifyOTP = async(req,res)=>{
+    try{
+        const {userId} = req.body;
+        const user = await userModel.findById(userId);
+
+        if(user.isAccountVerified){
+            return {success:false,message:"Account Already Verified"}
+        }   
+
+        const otp = string(OTP())
+
+        user.verifyotp=otp;
+        user.verifyotpExpiereAt=Date.now()+24*60*60*1000;
+
+        await user.save();
+
+        sendEmail(user.emila,"OTP Verification from I-WANZER",`Welcome to I-Wanzer. Your Account has been created with email id${user.email}\nYour OTP Is ${otp}`)
+
+        res.json({success:true,message:`Verification OTP Send on EMail ${user.email}`})
+
+    }catch(error){
+        res.json({
+                success:false,
+                message:error.message
+            })
+    }
+}
+
+
+
+module.exports = {register,login,logout,sendVerifyOTP}
