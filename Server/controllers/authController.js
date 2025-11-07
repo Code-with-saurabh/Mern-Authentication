@@ -165,6 +165,21 @@ const sendVerifyOTP = async(req,res)=>{
     }
 }
 
+const verifyEmail = async (req,res)=>{
+    const {userId,otp} = req.body;
+
+    if(!userId || !otp){
+        return res.json({sucess:false,message:"MISSING Details"})
+    }
+    try{
+
+    }catch(error){
+        res.json({
+                success:false,
+                message:error.message
+            })
+    }
+}
 
 
 module.exports = {register,login,logout,sendVerifyOTP}
