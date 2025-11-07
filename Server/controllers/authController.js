@@ -173,6 +173,28 @@ const verifyEmail = async (req,res)=>{
     }
     try{
 
+        if(!user){
+            return res.json({success:false,message:"User not found"})
+        }
+
+        if(user.verifyotp === '' || user.verifyotp !== otp){
+            return res.json({sucess:false,message:"Invalid OTP"})
+        }
+        
+        if(user.verifyotpExpiereAt < Date.now()){
+            return res.json({sucess:false,message:"OTP Expierd"})
+        }
+
+        user.isAccountVerified=true;
+        user.verifyotp="";
+        user.verifyotpExpiereAt=0;
+
+        await user.save()
+
+        return res.json({
+            success:true,
+            message:"Email Verified Successfully"
+        })
     }catch(error){
         res.json({
                 success:false,
