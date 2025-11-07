@@ -204,4 +204,4 @@ const verifyEmail = async (req,res)=>{
 }
 
 
-module.exports = {register,login,logout,sendVerifyOTP}
+module.exports = {register,login,logout,sendVerifyOTP,verifyEmail}
