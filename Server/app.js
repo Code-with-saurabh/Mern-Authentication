@@ -30,9 +30,10 @@ async function dbConnect(){
         const Res = await connectDB();
        
         if(Res){
-            app.listen(PORT,()=>{
-    console.log(`Server Started on PORT : ${PORT}`)
-})
+//             app.listen(PORT,()=>{
+//     console.log(`Server Started on PORT : ${PORT}`)
+// })
+        console.log(`Server Started`)
         }else{
             console.log("DataBase is not Connected...")
         }
@@ -43,3 +44,6 @@ async function dbConnect(){
 
 
 dbConnect();
+
+
+module.exports = app;
