@@ -45,7 +45,7 @@ const register = async (req,res)=>{
         })
 
         sendEmail(NewUser.email,"User Register successfully",`Hello ${NewUser.name}`,`
-            <h1>Hello User ${NewUser.name}</h1><br><p>Your OTP is ${OTP()}</p>`)
+            <h1 style={{textAligen:"center"}}>Hello User ${NewUser.name} </h1>`)
           return res.json({
             success:true,
             message:"user register successfully",
@@ -139,21 +139,22 @@ const logout = async (req,res)=>{
 
 const sendVerifyOTP = async(req,res)=>{
     try{
-        const {userId} = req.body;
+        const userId = req.userId;
+        console.log(userId)
         const user = await userModel.findById(userId);
 
         if(user.isAccountVerified){
             return {success:false,message:"Account Already Verified"}
         }   
 
-        const otp = string(OTP())
+        const otp = String(OTP())
 
         user.verifyotp=otp;
         user.verifyotpExpiereAt=Date.now()+24*60*60*1000;
 
         await user.save();
 
-        sendEmail(user.emila,"OTP Verification from I-WANZER",`Welcome to I-Wanzer. Your Account has been created with email id${user.email}\nYour OTP Is ${otp}`)
+        sendEmail(user.email,"OTP Verification from I-WANZER",`Welcome to I-Wanzer. Your Account has been created with email id${user.email}\nYour OTP Is ${otp}`)
 
         res.json({success:true,message:`Verification OTP Send on EMail ${user.email}`})
 
@@ -166,18 +167,23 @@ const sendVerifyOTP = async(req,res)=>{
 }
 
 const verifyEmail = async (req,res)=>{
-    const {userId,otp} = req.body;
-
+    const {otp} = req.body;
+    // console.log("OTP is ",otp)
+    const userId =  req.userId;
+    // console.log("User is : ",userId)
     if(!userId || !otp){
         return res.json({sucess:false,message:"MISSING Details"})
     }
     try{
 
+        const user = await userModel.findById(userId)
+        // console.log("This is Our User ",user)
         if(!user){
             return res.json({success:false,message:"User not found"})
         }
 
         if(user.verifyotp === '' || user.verifyotp !== otp){
+            // console.log("User OTP is : ",user.verifyotp)
             return res.json({sucess:false,message:"Invalid OTP"})
         }
         

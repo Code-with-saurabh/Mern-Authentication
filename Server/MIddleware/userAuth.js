@@ -3,7 +3,8 @@ const { JWT_SECRET } = require("../Config/Config");
 
 
 const userAuth = async (req,res,next)=>{
-    const {token} = req.cookie;
+    const {token} = req.cookies;
+    // console.log("The Token is ",token)
     if(!token){
         return res.json({
             success:false,
@@ -12,15 +13,17 @@ const userAuth = async (req,res,next)=>{
     }
     try{
         const Data = JWT.verify(token,JWT_SECRET)
-
+        
         if(Data.id){
-            req.body.userId = Data.id;
+            req.userId = Data.id;
         }else{
             return res.json({
-            success:false,
-            message:"Not Authorized. Login Again"
-        })
+                success:false,
+                message:"Not Authorized. Login Again"
+            })
         }
+        console.log(Data)
+        // cons
         next();
     }catch(error){
         res.json({
