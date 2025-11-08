@@ -299,6 +299,7 @@ const resetPassword = async(req,res)=>{
             })
         }
 
+        // const hashedPassword = await bcrypt.hash(NewPassword,45);
         const hashedPassword = await bcrypt.hash(NewPassword,10);
 
         user.password = hashedPassword;
