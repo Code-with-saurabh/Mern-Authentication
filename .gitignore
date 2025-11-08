@@ -29,3 +29,5 @@ build/
 *.sublime-workspace
 .idea/
 Thumbs.db
+# Local Netlify folder
+.netlify

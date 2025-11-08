@@ -17,6 +17,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 app.use(cors({credentials:true}))
 
+app.use(express.static(path.join(__dirname, '..', 'Views')))
 
 app.get("/",(req,res)=>{
     res.sendFile(path.join(__dirname, 'Views', 'index.html'));
