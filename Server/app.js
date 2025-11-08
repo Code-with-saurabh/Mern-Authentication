@@ -7,7 +7,8 @@ const connectDB = require("./Services/mongodb_connect");
 const { PORT } = require("./Config/Config");
 
 const app = express();
-const authRouter = require("./Routes/authRoutes")
+const authRouter = require("./Routes/authRoutes");
+const userRouter = require("./Routes/userRoutes");
 
 
 
@@ -22,6 +23,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use("/auth/api",authRouter)
+app.use("/user/api",userRouter)
 
 async function dbConnect(){
     try{
